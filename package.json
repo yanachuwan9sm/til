@@ -2,23 +2,31 @@
   "name": "til",
   "version": "1.0.0",
   "description": "",
-  "main": "diff-summary.js",
+  "main": "diff-summary.ts",
+  "type": "module",
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.md": [
+      "ts-node diff-summary.ts",
+      "git add summary/*.md"
+    ]
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@swc/core": "^1.3.69",
+    "@swc/helpers": "^0.5.1",
+    "@tsconfig/node-lts-strictest-esm": "^18.12.1",
+    "@types/node": "^20.4.2",
     "husky": "^8.0.0",
     "lint-staged": "^13.2.3"
   },
-  "lint-staged": {
-    "*.md": [
-      "node diff-summary.js",
-      "git add summary/*.md"
-    ]
-  },
   "dependencies": {
-    "date-fns": "^2.30.0"
+    "date-fns": "^2.30.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
   }
 }
