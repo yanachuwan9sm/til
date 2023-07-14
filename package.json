@@ -1,0 +1,21 @@
+{
+  "name": "til",
+  "version": "1.0.0",
+  "description": "",
+  "main": "diff-summary.js",
+  "scripts": {
+    "prepare": "husky install"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "husky": "^8.0.0",
+    "lint-staged": "^13.2.3"
+  },
+  "lint-staged": {
+    "*.md": "node diff-summary.js && git add -A"
+  },
+  "dependencies": {
+    "date-fns": "^2.30.0"
+  }
+}
