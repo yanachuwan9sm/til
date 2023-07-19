@@ -2,7 +2,7 @@
   "name": "til",
   "version": "1.0.0",
   "description": "",
-  "main": "diff-summary.ts",
+  "main": "script/index.ts",
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -10,7 +10,7 @@
   },
   "lint-staged": {
     "*.md": [
-      "ts-node diff-summary.ts",
+      "ts-node script/index.ts",
       "git add summary/*.md"
     ]
   },
@@ -21,11 +21,13 @@
     "@swc/helpers": "^0.5.1",
     "@tsconfig/node-lts-strictest-esm": "^18.12.1",
     "@types/node": "^20.4.2",
+    "dotenv": "^16.3.1",
     "husky": "^8.0.0",
     "lint-staged": "^13.2.3"
   },
   "dependencies": {
     "date-fns": "^2.30.0",
+    "openai": "^3.3.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   }
