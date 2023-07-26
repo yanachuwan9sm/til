@@ -25,8 +25,20 @@ const SYSTEM_PROMPT = `
 - bulleted list: "* item1"
 また、文中の引用符の前後には必ずスペースを入れてください。
 ex) word\`code\`word -> word \`code\` word
+また、参考文献のURLや内容に関する質問を生成することは避けてください。
 
-以下入力文になります。
+# 出力例は以下のフォーマットに沿ったものにしてください。
+
+==================================================
+
+***{質問文の全容がわかるようなタイトル}***
+
+***質問1***: xxx
+***質問2***: xxx
+***質問n***: xxx
+
+==================================================
+
 `;
 
 /**
@@ -87,8 +99,6 @@ async function generateQuestionChunkChatGPT(text: string): Promise<string> {
     max_tokens: MAX_OUTPUT_QUESTION_LENGTH,
     messages: messages,
   });
-
-  console.log(res);
 
   const chunkSummary = res.data.choices[0]?.message?.content || '';
   return chunkSummary;
