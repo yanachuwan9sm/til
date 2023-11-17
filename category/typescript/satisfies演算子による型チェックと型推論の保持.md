@@ -39,7 +39,7 @@ colorListWithAssertion.green.map((value) => value * 2);
 
 ### as const satisfies の活用してもっと便利に
 
-そうです。widening しない推論結果を保ったまま型で縛りたいが実現できます。
+widening しない AND 推論結果を保つ この 2 つをクリアしつつ型で縛りたいが実現可能になる。
 
 **型がマッチするかどうかをチェックしつつ（satisfies 型）、型推論は widening させない（as const）との組み合わせは強力！！**
 
@@ -82,3 +82,16 @@ export const urlListWithWidening = {
 //     readonly yahoo: "https://www.yahoo.co.jp/";
 // }
 ```
+
+(疑問)
+Template Literal Types で型アサーションをした場合に、何故 string 型に Widening されないのか？
+
+**TypeScript 4.2**
+-> 末尾に as const をつけた場合のみ Template Literal Types になるように変更。
+
+**TypeScript v4.3 Beta**
+-> 「文脈的に Template Literal Types しかありえないよね」という場合 ( 公式ブログでは contextually typed という表現 ) には、as const が無くても Template Literal Types が適応されるようになった。（これが答え）
+
+## 参考文献
+
+[TypeScript 4.9 の as const satisfies が便利。型チェックと widening 防止を同時に行う](https://zenn.dev/moneyforward/articles/typescript-as-const-satisfies)
