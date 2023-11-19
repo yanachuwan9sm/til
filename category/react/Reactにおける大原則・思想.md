@@ -1,0 +1,128 @@
+# React における大原則・思想
+
+- 1 : View に特化したライブラリ
+- 2 : レンダリング結果はブラウザに描画される & 描画結果は不変なもの（コンポーネント = (state) => DOM）
+- 3 : 宣言的 UI （UI = f(state)）であり、コンポーネントは純粋なもの
+- 4 : 何かを「変える」必要がある場合、通常はイベントハンドラで行う。最終手段として useEffect を検討する
+- 5 : 入力値が変化しない場合、レンダーをスキップすることができる（memo 化）
+
+## 1 : View に特化したライブラリ
+
+ルーター、データフェッチ、ステート管理、フォーム管理、etc.は
+その他の 3rd パーティーライブラリ、またはフレームワークである Next.js 等が担う。
+
+## 2 : レンダリング結果はブラウザに描画される & 描画結果は不変なもの（コンポーネント = (state) => DOM）
+
+[よくある間違い]
+❌ UI とはクリックなどのユーザイベントに直接反応して更新されるもの
+◯ インターフェースがイベントに応答するためには、state を更新する必要がある
+
+**レンダリング** 👉 React があなたのコンポーネント（関数）を呼び出すこと。
+
+react のレンダリングは基本的に、**state が変化（setter 関数を実行する） -> 再レンダリングが発生する -> 結果（コンポーネント = (state) => DOM）をブラウザへ反映** の繰り返しである。
+
+関数から返される JSX は、その時点での UI のスナップショットのようなもの
+（その JSX 内の props、イベントハンドラ、ローカル変数はすべて、レンダー時の state を使用して計算されます）
+
+## 3 : 宣言的 UI （UI = f(state)）であり、コンポーネントは純粋なもの
+
+状態に対して**一意に**定まる UI を定義する。
+👉 **コンポーネント（レンダリングフェーズ）は純粋である必要がある。**（同じ入力に対しては、常に同じ 出力（JSX） を返す）
+
+また、レンダリングフェーズで読み取ることができる 3 種類の入力値 (props、state、context)は読み取り専用として扱う。（ユーザ入力に応じて何かを変更したい場合は、変数に書き込む代わりに、state を設定することが適切）
+
+[コンポーネントを純粋に保つ – React](https://ja.react.dev/learn/keeping-components-pure)
+
+## 4 : 何かを「変える」必要がある場合、通常はイベントハンドラで行う。最終手段として useEffect を検討する
+
+副作用 -> スクリーンの更新、アニメーションの開始、データの変更など。
+
+```jsx
+export default function Button() {
+  function handleClick() {
+    // このイベントハンドラはレンダー中に実行されるものではない。（＝純粋である必要性はない）
+    alert('You clicked me!');
+  }
+
+  return <button onClick={handleClick}>Click me</button>;
+}
+```
+
+> React では、副作用は通常、イベントハンドラの中に属します。イベントハンドラは、ボタンがクリックされたといった何らかのアクションが実行されたときに React が実行する関数です。イベントハンドラは、コンポーネントの「内側」で定義されているものではありますが、レンダーの「最中」に実行されるわけではありません！ つまり、**イベントハンドラは純粋である必要はありません。**
+
+### 副作用を書くのに適切なイベントハンドラがどうしても見つからない場合、、、
+
+最終手段としてコンポーネントから返された JSX に useEffect 呼び出しを付加することで副作用を付随させる。
+（👉 React に、その関数をレンダーの後（その時点なら副作用が許されるため）で呼ぶように指示できる）
+
+```tsx
+// 実はこの関数は、、、、
+const App = () => {
+  const [num, setNum] = useState(0);
+  useEffect(() => {
+    setNum(Math.floor(Math.random() * 10));
+  }, []);
+  return <div>{num}</div>;
+};
+
+// レンダリングフェーズの react ではコメントアウトした部分（副作用の部分）は実行されていない。
+// => react はレンダリング結果をブラウザへ反映した後に useEffect を呼び出すから
+const App = () => {
+  const [num] = useState(0);
+  // useEffect(() => {
+  //   setNum(Math.floor(Math.random() * 10));
+  // }, []);
+  return <div>{num}</div>;
+};
+```
+
+上記より、prop と state が同じであれば再レンダリングを何度行っても同じ結果になる状態にできる (レンダリングが冪等)
+⇨ 副作用フェーズとレンダリングフェーズを分けることでレンダリングを冪等（純粋な関数）にしている。
+
+### 何度も言うけど、出来る限り、useEffect は使わないても良い方向で考える（useEffect 乱用ダメ、絶対）
+
+[エフェクトは必要ないかもしれない – React](https://ja.react.dev/learn/you-might-not-need-an-effect)
+
+```tsx
+// case : Xの値の変更に対して、Yの値が同期的に変更されて欲しい場合
+
+// NG
+const { data: X } = useQuery({ queryKey: ["something"] , queryFn: fetchSomething });
+const [Y, setY] = useState();
+useEffect(()=> setY(X.toUpperCase()));
+
+// OK （Xの値が変わったら、Xを使用している X.toUpperCase() も強制的に再実行されるから、わざわざuseStateやuseEffectを使う必要が無い）
+const { data: X } = useQuery({ queryKey: ["something"] , queryFn: fetchSomething });
+const Y = X.toUpperCase();
+（必要であればメモ化）const Y = useMemo(()=> X.toUpperCase(),[X])
+```
+
+<https://ja.react.dev/learn/keeping-components-pure>
+
+<https://zenn.dev/pandanoir/articles/19dea2fb3daadb>
+
+## 5 : 入力値が変化しない場合、レンダーをスキップすることができる（memo 化）
+
+**入力値(props)が変化しない（同じ出力を返す純関数である）場合にパフォーマンスを上げるため**には memo 化を使う。
+また、**useMemo でラップする関数はレンダー中に実行されるため、純粋 (pure) な計算に対してのみ機能**する。
+👉 つまり、**無理矢理レンダリングを抑えるため or 純関数 ではない場合に memo 化 を使用するのは NG。**
+
+### メモ化が（計算コストが高い）必要かどうかを確認するポイント
+
+- ① 全体のログ時間がかなりの量（例えば 1ms 以上）になる場合（その計算をメモ化する意味があるかも）
+  👉 実験として useMemo で計算をラップしてみて、その操作に対する合計時間が減少したかどうかをログで確認できる。
+
+  ```tsx
+  console.time('filter array');
+  const visibleTodos = useMemo(() => {
+    return getFilteredTodos(todos, filter); // Skipped if todos and filter haven't changed
+  }, [todos, filter]);
+  console.timeEnd('filter array');
+  ```
+
+- ② 意図的に処理速度を低下させてパフォーマンスをテストする（ex : Chrome の CPU スロットリングオプション）
+  👉 開発で使っているマシンは、ユーザのマシンより高速に動作するで可能性が高いため。
+- ③ 最も正確にパフォーマンスを計測するために、アプリを本番環境用にビルドし、ユーザが持っているようなデバイスでテストする
+  👉 開発環境でのパフォーマンス測定では完全に正確な結果は得られない（Strict Mode がオンの場合、各コンポーネントが 1 度ではなく 2 度レンダーされるため）
+
+  <https://ja.react.dev/learn/you-might-not-need-an-effect#how-to-tell-if-a-calculation-is-expensive>
