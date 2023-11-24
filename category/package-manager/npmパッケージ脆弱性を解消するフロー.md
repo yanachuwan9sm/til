@@ -13,7 +13,7 @@
 
 ② 最新ではない場合、マイナーバージョンまで最新にする(`npm update`)
 
-👉 `npm update` より、`npm-check-updates` を利用し、マイナーバージョンのみアップデートを実施した方が良いかも。（npm update コマンドでは、package.json の書き換えは行ってくれないから）
+👉 `npm update` より、`npm-check-updates` を利用し、マイナーバージョンのみアップデートを実施した方が良いかも！`ncu -u --target minor`（npm update コマンドでは、package.json の書き換えは行ってくれないため）
 
 ③ 脆弱性のある依存パッケージを確認する（`npm audit`）
 

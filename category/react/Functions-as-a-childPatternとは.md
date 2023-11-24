@@ -1,4 +1,4 @@
-# Functions as a Child pattern とは？
+# Functions As A Child Pattern とは？
 
 ## 特徴
 
