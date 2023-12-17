@@ -102,7 +102,10 @@ Router Cache の 時間経過におけるキャッシュの破棄は、取得時
 
 [Next.js: App Router: API Reference: Functions: fetch](https://nextjs.org/docs/app/api-reference/functions/fetch)
 
+[Next.js App Router での MPA フロントエンド刷新 - Speaker Deck](https://speakerdeck.com/mugi_uno/next-dot-js-app-router-deno-mpa-hurontoendoshua-xin)
+
 [Next.js App Router 知られざる Client-side Cache の仕様](https://zenn.dev/akfm/articles/next-app-router-client-cache)
 
 [Next.js の App Router が提供する 4 つのキャッシュ機能 - SO Technologies 開発者ブログ](https://developer.so-tech.co.jp/entry/2023/11/06/121802)
+
 [Next.js の 4 つのキャッシュ](https://zenn.dev/frontendflat/articles/nextjs-cache)

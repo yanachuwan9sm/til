@@ -11,7 +11,7 @@
 最近の EC サービスは、ログインしていなくてもショッピングカートに追加でき、決済直前で認証を挟む実装が多いが、これは先にカートのための 区別 を行い、あとから 識別 していることになる。
 
 > Cookie とは必ずしも認証結果というわけではなく、ユーザ同士が 区別 できれば良いだけのユースケースもあるというのが、 Cookie の使い方を考える上で非常に大事なことだ。
-> 3PCA 2 日目: Cookie による区別と識別 | blog.jxck.io
+> [3PCA 2 日目: Cookie による区別と識別 | blog.jxck.io](https://blog.jxck.io/entries/2023-12-02/3pca-cookie.html)
 
 ## Cookie の主なユースケース
 
@@ -49,10 +49,13 @@ Redis や他の Key-Value 型のデータベースにセッション ID とセ�
 
 ### 署名付きクッキー
 
-https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-signed-cookies.html#private-content-how-signed-cookies-work
-https://zenn.dev/tera_ny/articles/034c2cca6674b3
+<https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-signed-cookies.html#private-content-how-signed-cookies-work>
+
+<https://zenn.dev/tera_ny/articles/034c2cca6674b3>
 
 ### セッション認証とトークン認証について
+
+<https://zenn.dev/oreilly_ota/articles/31d66fab5c184e>
 
 ## 3rd Party Cookie
 
