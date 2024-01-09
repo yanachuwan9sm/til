@@ -1,4 +1,4 @@
-# ざっくり npm-yarn-pnpm
+# ざっくり npm-yarn
 
 ## npm
 
@@ -127,86 +127,6 @@ yarn.lock はパッケージの詳細が記載されているのみで、node_mo
   - 各パッケージを zip 化しプロジェクトの .yarn/cache/ 配下に配置、git push することで各々の install 作業が不要になる
 - PnP と従来の node_modules を生成するモードが切り替えれる
 
-## pnpm
-
-```json
-node_modules/
-|-- .pnpm
-|   |-- mod-a@1.0.0
-|   |   `-- node_modules
-|   |       |-- mod-a
-|   |       `-- mod-b -> ../../mod-b@1.0.0/node_modules/mod-b
-|   |-- mod-b@1.0.0
-|   |   `-- node_modules
-|   |       `-- mod-b
-|   |-- mod-b@2.0.0
-|   |   `-- node_modules
-|   |       `-- mod-b
-|   |-- mod-c@1.0.0
-|   |   `-- node_modules
-|   |       |-- mod-b -> ../../mod-b@2.0.0/node_modules/mod-b
-|   |       `-- mod-c
-|   `-- node_modules
-|       `-- mod-b -> ../mod-b@1.0.0/node_modules/mod-b
-|-- mod-a -> .pnpm/mod-a@1.0.0/node_modules/mod-a
-`-- mod-c -> .pnpm/mod-c@1.0.0/node_modules/mod-c
-```
-
-- performant npm の略。2017 年に OSS として リリースされたもの。
-- ディスク使用量の効率化が[開発の動機](https://pnpm.io/motivation#saving-disk-space)であり、dedupe や パッケージの巻き上げ(hoisting) の代わりに **シンボリックリンクに基づく node_modules 構造** を採用。
-  - install したパッケージは global な.pnpm_store 内に配置され、ハードリンクされる
-  - 木構造内の重複パッケージは sym link で使い回す
-
-```json
-node_modules/
-|-- .pnpm <-プロジェクトで使われている全てのパッケージの依存関係
-|   |-- foo@1.0.0
-|   |   `-- node_modules
-|   |       |-- foo -> <store>/foo
-|   |       |-- bar -> ../../bar@1.0.0/node_modules/bar
-|   |       `-- lodash -> ../../lodash@1.0.0/node_modules/lodash
-|   |-- bar@1.0.0
-|   |   `-- node_modules
-|   |       |-- bar -> <store>/bar
-|   |       `-- lodash -> ../../lodash@1.0.0/node_modules/lodash
-|   |-- lodash@1.0.0
-|   |   `-- node_modules
-|   |       `-- lodash -> <store>/lodash
-|-- foo -> .pnpm/foo@1.0.0/node_modules/foo <- 直接 npm install したもの（コンテンツストアへのハードリンク）
-```
-
-**直接インストールしたもの**
-👉 `node_modules` 配下にパッケージのシンボリックが作成される。（つまり、アプリケーションコードから直接アクセスできるパッケージは 直接インストールしたもの だけ）
-
-**プロジェクトで使われているすべてのパッケージの依存関係**
-👉 `node_modules/.pnpm` 配下に `.pnpm/<name>@<version>/node_modules/<name>`という命名規則で配置される。
-
-**実体となるファイル**
-👉 すべてグローバルに管理される Content-addressable store（コンテンツ探索可能なストア）に配置。（MacOS では `~/Library/pnpm/store/v3` がデフォルトの配置場所）
-node_modules に存在するすべてのパッケージに含まれるファイルは、コンテンツ探索可能なストアへのハードリンクになっている。
-
-<https://zenn.dev/s_takashi/articles/7358a32b1a6d52>
-
-## パフォーマンス
-
-| action  | cache | lockfile | node_modules | npm   | pnpm  | Yarn  | Yarn PnP |
-| :------ | :---- | :------- | :----------- | :---- | :---- | :---- | :------- |
-| install |       |          |              | 35.3s | 15.7s | 16.7s | 22.9s    |
-| install | ✔     | ✔        | ✔            | 1.8s  | 1.1s  | 2.1s  | n/a      |
-| install | ✔     | ✔        |              | 10.3s | 4.1s  | 6.5s  | 1.42     |
-| install | ✔     |          |              | 14.9s | 7.2s  | 11.1s | 6.1s     |
-| install |       | ✔        |              | 16.8s | 12.6s | 11.5s | 17.2s    |
-| install | ✔     |          | ✔            | 2.4s  | 2.7s  | 6.9s  | n/a      |
-| install |       | ✔        | ✔            | 1.8s  | 1.2s  | 7.1s  | n/a      |
-| install |       |          | ✔            | 2.3s  | 7.8s  | 11.7s | n/a      |
-| update  | n/a   | n/a      | n/a          | 1.9s  | 9s    | 15.4s | 28.3s    |
-
-<https://blog.logrocket.com/javascript-package-managers-compared/>
-
-## ワークスペース(monorepo)として npm？yarn？pnpm？
-
-WIP
-
 ## 参考文献
 
 <https://pnpm.io/motivation#saving-disk-space>
@@ -216,3 +136,5 @@ WIP
 [node_modules の問題点とその歴史 npm, yarn と pnpm](https://zenn.dev/saggggo/articles/dbd739508ac212)
 
 [pnpm の特徴](https://zenn.dev/azukiazusa/articles/pnpm-feature)
+
+[yarn の hoisting を理解する](https://tars0x9752.com/posts/yarn-hoisting#%E3%81%AA%E3%81%9Choisting%E3%81%99%E3%82%8B%E3%81%AE%E3%81%8B)
